@@ -8,7 +8,7 @@
 
 <https://report.nodebench.workers.dev>
 
-> 当前 `v0.2.x` 是可公开试用的开发版本。系统、Sysbench/Fio 性能、全国
+> 当前 `v1.0.x` 是可公开试用的开发版本。系统、Sysbench/Fio 性能、全国
 > 三网 TCP SYN、国际/CDN 可达性、TCP 回程、IP 风险、常用服务解锁和评分
 > 已经可用，三网带宽测速正常预算约 3GB、全局异常硬上限为 12GB。页面会
 > 把未采集项目标为“未测”，不会使用模拟数据补位。
@@ -127,6 +127,8 @@ tmux attach -t nodebench
 - `https://tcpquality.ibsgss.uk`：获取三网节点目录；
 - `whois.cymru.com:43`：批量识别路由 ASN，失败时自动降级；
 - `https://api.ipapi.is`：检测 IP 地理、ASN、类型和风险；
+- `https://ipinfo.check.place`：按照 NodeQuality 的方法比较 IP 使用国家
+  与注册国家，判定原生或广播；
 - Netflix、YouTube、Prime Video、TikTok、Reddit 和 ChatGPT 的公开入口：
   检测本机原生访问与地区，不发送 NodeBench 报告；
 - `https://report.nodebench.workers.dev`：仅测评结束时上传。
