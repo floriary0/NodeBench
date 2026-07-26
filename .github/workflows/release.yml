@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - name: Test
+        run: go test ./...
+      - name: Build Linux archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          mkdir -p dist
+          for arch in amd64 arm64; do
+            work="dist/nodebench-linux-${arch}"
+            mkdir -p "$work"
+            CGO_ENABLED=0 GOOS=linux GOARCH="$arch" go build \
+              -trimpath \
+              -ldflags="-s -w -X github.com/nodebench/nodebench/internal/model.ClientVersion=${version}" \
+              -o "$work/nodebench" ./cmd/nodebench
+            tar -C "$work" -czf "dist/nodebench-linux-${arch}.tar.gz" nodebench
+          done
+          (
+            cd dist
+            sha256sum nodebench-linux-*.tar.gz > SHA256SUMS
+          )
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            dist/nodebench-linux-amd64.tar.gz \
+            dist/nodebench-linux-arm64.tar.gz \
+            dist/SHA256SUMS \
+            --title "NodeBench $GITHUB_REF_NAME" \
+            --generate-notes
